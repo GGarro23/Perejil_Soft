@@ -1,0 +1,115 @@
+const db = require('../config/db');
+const obtenerPendientes = async (req, res) => {
+
+    try {
+
+        const [ordenes] = await db.query(
+            `
+            SELECT 
+                o.id,
+                o.mesa_id,
+                o.estado,
+                o.fecha,
+                m.numero AS mesa
+            FROM ordenes o
+            JOIN mesas m ON o.mesa_id = m.id
+            WHERE o.estado = 'pendiente'
+            ORDER BY o.fecha ASC
+            `
+        );
+
+        res.json(ordenes);
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            mensaje: 'Error al obtener órdenes'
+        });
+
+    }
+
+};
+const detalleOrden = async (req, res) => {
+
+    const { id } = req.params;
+
+    try {
+
+        const [items] = await db.query(
+            `
+            SELECT 
+                oi.id,
+                p.nombre,
+                p.precio,
+                oi.cantidad,
+                oi.nota,
+                (p.precio * oi.cantidad) AS subtotal
+            FROM orden_items oi
+            JOIN productos p ON oi.producto_id = p.id
+            WHERE oi.order_id = ?
+            `,
+            [id]
+        );
+
+        res.json(items);
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            mensaje: 'Error al obtener detalle'
+        });
+
+    }
+
+};
+const cambiarEstado = async (req, res) => {
+
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    const estadosValidos = [
+        'en preparacion',
+        'listo'
+    ];
+
+    if (!estadosValidos.includes(estado)) {
+        return res.status(400).json({
+            mensaje: 'Estado inválido'
+        });
+    }
+
+    try {
+
+        await db.query(
+            `
+            UPDATE ordenes
+            SET estado = ?
+            WHERE id = ?
+            `,
+            [estado, id]
+        );
+
+        res.json({
+            mensaje: 'Estado actualizado'
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            mensaje: 'Error al actualizar estado'
+        });
+
+    }
+
+};
+module.exports = {
+    obtenerPendientes,
+    detalleOrden,
+    cambiarEstado
+};
