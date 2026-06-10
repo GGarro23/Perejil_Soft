@@ -12,16 +12,16 @@ async (producto) => {
 
 export const cambiarEstadoProducto =
 async (id) => {
-    const response =await api.patch( `/productos/${id}/agotado`);
+    const response = await api.patch( `/productos/${id}/agotado`);
     return response.data;
 };
 export const eliminarProducto =
 async (id) => {
-    const response =await api.delete(`/productos/${id}`);
+    const response = await api.delete(`/productos/${id}`);
     return response.data;
 };
 export const actualizarProducto =
 async (id, producto) => {
-    const response =await api.put(`/productos/${id}`,producto);
+    const response = await api.put(`/productos/${id}`,producto);
     return response.data;
 };

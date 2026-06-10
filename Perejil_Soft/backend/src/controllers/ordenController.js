@@ -90,7 +90,7 @@ const obtenerOrdenes = async (req, res) => {
 
                     o.estado,
 
-                    o.created_at
+                    o.fecha
                     AS fecha,
 
                     COALESCE(
@@ -126,7 +126,7 @@ const obtenerOrdenes = async (req, res) => {
                     m.numero,
                     u.nombre,
                     o.estado,
-                    o.created_at
+                    o.fecha
 
                 ORDER BY
                     o.id DESC
@@ -250,6 +250,50 @@ const cancelarOrden = async (req, res) => {
         });
     }
 };
+
+const cerrarOrden = async(req, res) => {
+    const { ordenId } = req.params;
+    const { metodo_pago = 'efectivo' } = req.body;
+    try{
+        const usuario_id = req.usuario.id;
+        const [items] = await db.query(
+            `
+            SELECT SUM(p.precio * oi.cantidad) AS total
+            FROM orden_items oi
+            JOIN productos p ON oi.producto_id = p.id
+            WHERE oi.order_id = ?
+            `,
+            [ordenId]
+        );
+        const total = items[0].total || 0;
+        await db.query(
+            `
+            UPDATE ordenes SET estado = 'listo' WHERE id = ?
+            `,
+            [ordenId]
+        );
+        const [venta] = await db.query(
+            `
+            INSERT INTO ventas (orden_id, usuario_id, total, metodo_pago)
+            VALUES (?, ?, ?, ?)
+            `, 
+            [ordenId, usuario_id, total, metodo_pago]
+        );
+        const numeroFactura = venta.insertId;;
+        await db.query(
+            `
+            INSERT INTO facturas (venta_id, numero_factura, total)
+            VALUES (?, ?, ?)
+            `,
+            [venta.insertId, numeroFactura, total]
+        );
+        res.json({ mensaje: 'Orden cerrada', ventaId: venta.insertId });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ mensaje: 'Error al cerrar orden' });
+    }
+};
+
 module.exports = {
 
     crearOrden,
@@ -262,6 +306,8 @@ module.exports = {
 
     enviarACocina,
 
-    cancelarOrden
+    cancelarOrden,
+
+    cerrarOrden
 
 };

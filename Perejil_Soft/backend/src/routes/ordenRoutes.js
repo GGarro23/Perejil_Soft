@@ -8,8 +8,9 @@ const {
     obtenerOrden,
     obtenerOrdenes,
     enviarACocina,
-    cancelarOrden
-}=require('../controllers/ordenController');
+    cancelarOrden,
+    cerrarOrden
+} = require('../controllers/ordenController');
 router.post(
     '/',
     verificarToken,
@@ -39,5 +40,10 @@ router.patch(
     '/:ordenId/cancelar',
     verificarToken,
     cancelarOrden
+);
+router.post(
+    '/:ordenId/cerrar',
+    verificarToken,
+    cerrarOrden
 );
 module.exports = router;

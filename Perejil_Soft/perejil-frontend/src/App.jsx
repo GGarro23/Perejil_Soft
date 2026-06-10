@@ -7,10 +7,11 @@ import Usuarios from "./pages/admin/Usuarios";
 import Mesas from "./pages/admin/Mesas";
 import Pedidos from "./pages/admin/Pedidos";
 import CocinaDashboard from "./pages/cocina/CocinaDashboard";
-function Ventas() {return <h1>Panel Ventas</h1>;}
-//import Ventas from "./pages/admin/Ventas";
-function MeseroDashboard() {return <h1>Panel Mesero</h1>;}
-function Facturas() {return <h1>Facturas</h1>;}
+import Ventas from "./pages/admin/Ventas";
+import Facturas from "./pages/admin/Facturas";
+import CrearOrden from "./pages/mesero/CrearOrden";
+import OrdenesActivas from "./pages/mesero/OrdenesActivas";
+import EstadoPedidos from "./pages/mesero/EstadoPedidos";
 function App() {
     return(
         <BrowserRouter>
@@ -79,13 +80,29 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-                <Route
+                <Route 
                     path="/mesero"
                     element={
                         <ProtectedRoute role="mesero">
-                            <MeseroDashboard />
+                            <CrearOrden />
                         </ProtectedRoute>
-                    }
+                    } 
+                />
+                <Route 
+                    path="/mesero/ordenes"
+                    element={
+                        <ProtectedRoute role="mesero">
+                            <OrdenesActivas />
+                        </ProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/mesero/estado"
+                    element={
+                        <ProtectedRoute role="mesero">
+                            <EstadoPedidos />
+                        </ProtectedRoute>
+                    } 
                 />
                 <Route
                     path="/cocina"
@@ -94,7 +111,7 @@ function App() {
                             <CocinaDashboard />
                         </ProtectedRoute>
                     }
-                />              
+                />      
             </Routes>
         </BrowserRouter>
     );

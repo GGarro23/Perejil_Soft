@@ -58,13 +58,13 @@ function Pedidos() {
                             Todos
                         </option>
                         <option>
-                            pendiente
+                            Pendientes
                         </option>
                         <option>
-                            en preparacion
+                            En preparación
                         </option>
                         <option>
-                            cancelado
+                            Cancelados
                         </option>
                     </select>
                 </div>
@@ -85,7 +85,7 @@ function Pedidos() {
                                 Mesero
                             </th>
                             <th>
-                                Fecha y hora
+                                Fecha y Hora
                             </th>
                             <th>
                                 Estado

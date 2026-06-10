@@ -66,9 +66,9 @@ function AdminDashboard() {
                     Resumen para administrar
                 </h2>
                 <p>
-                    Desde aquí se puede administrar
+                    Desde aquí se pueden administrar
                     mesas, usuarios, productos,
-                    pedidos y reportes.
+                    pedidos y los reportes.
                 </p>
             </div>
         </MainLayout>
