@@ -51,6 +51,12 @@ function CocinaDashboard() {
             console.log(error);
         }
     };
+    const formatHora = (fecha) => {
+        return new Date(fecha).toLocaleTimeString("es-CR", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    };
     const marcarListo = async (idOrden, boton) => {
         const rect = boton.getBoundingClientRect();
 
@@ -100,6 +106,9 @@ function CocinaDashboard() {
                         <div className="orden-card orden-pendiente" key={orden.id}>
                             <h3>{t.order} #{orden.id}</h3>
                             <p>{t.table} {orden.mesa}</p>
+                            <p className="orden-hora">
+                                Hora: {formatHora(orden.fecha)}
+                            </p>
 
                             {orden.productos.map((producto, i) => (
                                 <div className="producto-row" key={i}>
@@ -109,15 +118,14 @@ function CocinaDashboard() {
                                             x {producto.cantidad}
                                         </strong>
                                     </div>
-
-                                    {producto.nota && (
-                                        <p className="nota">
-                                            {producto.nota}
-                                        </p>
-                                    )}
                                 </div>
                             ))}
-
+                            {orden.nota && (
+                                <div className="nota-orden-cocina">
+                                    <strong>Nota general:</strong>
+                                    <p>{orden.nota}</p>
+                                </div>
+                            )}
                             <button
                                 className="btn-preparacion"
                                 onClick={() => marcarPreparacion(orden.id)}
@@ -136,6 +144,9 @@ function CocinaDashboard() {
                         <div className="orden-card orden-preparacion" key={orden.id}>
                             <h3>{t.order} #{orden.id}</h3>
                             <p>{t.table}{orden.mesa}</p>
+                            <p className="orden-hora">
+                                Hora: {formatHora(orden.fecha)}
+                            </p>
 
                             {orden.productos.map((producto, i) => (
                                 <div className="producto-row" key={i}>
@@ -145,15 +156,14 @@ function CocinaDashboard() {
                                             x {producto.cantidad}
                                         </strong>
                                     </div>
-
-                                    {producto.nota && (
-                                        <p className="nota">
-                                            {producto.nota}
-                                        </p>
-                                    )}
                                 </div>
                             ))}
-
+                            {orden.nota && (
+                                <div className="nota-orden-cocina">
+                                    <strong>Nota general:</strong>
+                                    <p>{orden.nota}</p>
+                                </div>
+                            )}
                             <button
                                 className="btn-listo"
                                 onClick={(e) => marcarListo(orden.id, e.currentTarget)}

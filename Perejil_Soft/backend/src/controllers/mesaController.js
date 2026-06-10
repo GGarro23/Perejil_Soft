@@ -67,6 +67,32 @@ const crearMesa = async (req, res) => {
         });
     }
 };
+const actualizarMesa = async (req, res) => {
+    const { id } = req.params;
+    const { numero, capacidad, activa } = req.body;
+
+    try {
+        await db.query(
+            `
+            UPDATE mesas
+            SET numero = ?, capacidad = ?, activa = ?
+            WHERE id = ?
+            `,
+            [numero, capacidad, activa, id]
+        );
+
+        res.json({
+            mensaje: "Mesa actualizada"
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            mensaje: "Error al actualizar mesa"
+        });
+    }
+};
 // Listar mesas
 const obtenerMesas = async (req, res) => {
 

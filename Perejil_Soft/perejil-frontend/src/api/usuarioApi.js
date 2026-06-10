@@ -9,6 +9,10 @@ async (usuario) => {
     const response = await api.post("/usuarios", usuario);
     return response.data;
 };
+export const editarUsuario = async (id, usuario) => {
+    const res = await api.put(`/usuarios/${id}`, usuario);
+    return res.data;
+};
 export const eliminarUsuario =
 async (id) => {
     const response = await api.delete( `/usuarios/${id}`);

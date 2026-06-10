@@ -15,3 +15,7 @@ export const cambiarEstadoMesa = async (id) => {
     const response =await api.patch(`/mesas/${id}/estado`);
     return response.data;
 };
+export const editarMesa = async (id, mesa) => {
+    const response = await api.put(`/mesas/${id}`, mesa);
+    return response.data;
+};

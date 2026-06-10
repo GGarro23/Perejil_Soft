@@ -4,6 +4,7 @@ const verificarToken =
 require('../middleware/authMiddleware');
 const {
     crearUsuario,
+    editarUsuario,
     obtenerUsuarios,
     eliminarUsuario
 } = require('../controllers/usuarioController');
@@ -11,6 +12,11 @@ router.get(
     '/',
     verificarToken,
     obtenerUsuarios
+);
+router.put(
+    "/:id",
+     verificarToken,
+     editarUsuario
 );
 router.post(
     '/',

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import MeseroLayout from "../../layouts/MeseroLayout";
 import { obtenerMesas } from "../../api/mesaApi";
 import { obtenerProductos } from "../../api/productoApi";
-import { crearOrden, agregarProducto, enviarACocina, cancelarOrden } from "../../api/ordenApi";
+import { crearOrden, agregarProducto, enviarACocina, cancelarOrden, guardarNotaOrden } from "../../api/ordenApi";
 
 function CrearOrden() {
     const [mesas, setMesas] = useState([]);
@@ -10,6 +10,8 @@ function CrearOrden() {
     const [mesaSeleccionada, setMesaSeleccionada] = useState(null);
     const [ordenId, setOrdenId] = useState(null);
     const [resumen, setResumen] = useState([]);
+    const [notaOrden, setNotaOrden] = useState("");
+    const [nota, setNota] = useState("");
     const [error, setError] = useState("");
     const [mensaje, setMensaje] = useState("");
 
@@ -59,18 +61,23 @@ function CrearOrden() {
 
     const total = resumen.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
 
-    const handleEnviarCocina = async () => {
-        if (!ordenId) return;
-        try {
-            await enviarACocina(ordenId);
-            setMensaje("Orden enviada a cocina");
-            setOrdenId(null);
-            setMesaSeleccionada(null);
-            setResumen([]);
-        } catch (err) {
-            setError("Error al enviar a cocina");
-        }
-    };
+const handleEnviarCocina = async () => {
+    if (!ordenId) return;
+
+    try {
+        await guardarNotaOrden(ordenId, notaOrden);
+        await enviarACocina(ordenId);
+
+        setMensaje("Orden enviada a cocina");
+        setOrdenId(null);
+        setMesaSeleccionada(null);
+        setResumen([]);
+        setNotaOrden("");
+
+    } catch (err) {
+        setError("Error al enviar a cocina");
+    }
+};
 
     const handleCancelar = async () => {
         if (!ordenId) return;
@@ -184,6 +191,21 @@ function CrearOrden() {
                         <span>Total</span>
                         <span>₡{Number(total).toLocaleString()}</span>
                     </div>
+                    <textarea
+                        placeholder="Agregar nota..."
+                        value={notaOrden}
+                        onChange={(e) => setNotaOrden(e.target.value)}
+                        style={{
+                            width: "100%",
+                            minHeight: "90px",
+                            marginBottom: "12px",
+                            padding: "12px",
+                            borderRadius: "12px",
+                            border: "1px solid #D1D5DB",
+                            resize: "vertical",
+                            fontFamily: "inherit"
+                        }}
+                    />
                     <button className="btn-primary" style={{ width: "100%", marginBottom: "8px" }} onClick={handleEnviarCocina}>
                         Enviar a cocina
                     </button>
@@ -205,8 +227,8 @@ function CrearOrden() {
 function FiShoppingCartIcon() {
     return (
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
         </svg>
     );
 }

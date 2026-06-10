@@ -1,15 +1,50 @@
 const db = require('../config/db');
+const validarPropietarioOrden = async (ordenId, usuario) => {
+    const [orden] = await db.query(
+        `
+        SELECT usuario_id, estado
+        FROM ordenes
+        WHERE id = ?
+        `,
+        [ordenId]
+    );
+
+    if (orden.length === 0) {
+        return {
+            ok: false,
+            status: 404,
+            mensaje: "Orden no encontrada"
+        };
+    }
+
+    if (
+        usuario.rol !== "admin" &&
+        usuario.rol !== "cocina" &&
+        orden[0].usuario_id !== usuario.id
+    ) {
+        return {
+            ok: false,
+            status: 403,
+            mensaje: "No puede modificar una orden creada por otro mesero"
+        };
+    }
+
+    return {
+        ok: true,
+        orden: orden[0]
+    };
+};
 const crearOrden = async (req, res) => {
-    const { mesa_id } = req.body;
+    const { mesa_id, nota } = req.body;
     try {
         const usuario_id = req.usuario.id;
         const [resultado] = await db.query(
             `
             INSERT INTO ordenes
-            (mesa_id, usuario_id)
-            VALUES (?, ?)
+            (mesa_id, usuario_id, nota)
+            VALUES (?, ?, ?)
             `,
-            [mesa_id, usuario_id]
+            [mesa_id, usuario_id, nota || null]
         );
         res.status(201).json({
             mensaje: 'Orden creada',
@@ -22,6 +57,31 @@ const crearOrden = async (req, res) => {
         });
     }
 };
+const guardarNotaOrden = async (req, res) => {
+    const { ordenId } = req.params;
+    const { nota } = req.body;
+
+    try {
+        await db.query(
+            `
+            UPDATE ordenes
+            SET nota = ?
+            WHERE id = ?
+            `,
+            [nota, ordenId]
+        );
+
+        res.json({
+            mensaje: "Nota guardada"
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            mensaje: "Error al guardar nota"
+        });
+    }
+};
 const agregarProducto = async (req, res) => {
     const { ordenId } = req.params;
     const {
@@ -30,6 +90,16 @@ const agregarProducto = async (req, res) => {
         nota
     } = req.body;
     try {
+        const validacion = await validarPropietarioOrden(
+            ordenId,
+            req.usuario
+        );
+
+        if (!validacion.ok) {
+            return res.status(validacion.status).json({
+                mensaje: validacion.mensaje
+            });
+        }
         const [producto] = await db.query(
             `
             SELECT *
@@ -193,6 +263,16 @@ const obtenerOrden = async (req, res) => {
 const enviarACocina = async (req, res) => {
     const { ordenId } = req.params;
     try {
+        const validacion = await validarPropietarioOrden(
+            ordenId,
+            req.usuario
+        );
+
+        if (!validacion.ok) {
+            return res.status(validacion.status).json({
+                mensaje: validacion.mensaje
+            });
+        }
         await db.query(
             `
             UPDATE ordenes
@@ -215,6 +295,16 @@ const enviarACocina = async (req, res) => {
 const cancelarOrden = async (req, res) => {
     const { ordenId } = req.params;
     try {
+        const validacion = await validarPropietarioOrden(
+            ordenId,
+            req.usuario
+        );
+
+        if (!validacion.ok) {
+            return res.status(validacion.status).json({
+                mensaje: validacion.mensaje
+            });
+        }
         const [orden] = await db.query(
             `
             SELECT estado
@@ -257,7 +347,16 @@ const cerrarOrden = async (req, res) => {
 
     try {
         const usuario_id = req.usuario.id;
+        const validacion = await validarPropietarioOrden(
+            ordenId,
+            req.usuario
+        );
 
+        if (!validacion.ok) {
+            return res.status(validacion.status).json({
+                mensaje: validacion.mensaje
+            });
+        }
         const [orden] = await db.query(
             `
             SELECT estado
@@ -351,6 +450,8 @@ module.exports = {
 
     cancelarOrden,
 
-    cerrarOrden
+    cerrarOrden,
+
+    guardarNotaOrden
 
 };

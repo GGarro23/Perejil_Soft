@@ -1,27 +1,29 @@
 import { useEffect, useState } from "react";
 import MainLayout from "../../layouts/MainLayout";
-import {obtenerMesas,crearMesa,eliminarMesa,cambiarEstadoMesa} from "../../api/mesaApi";
+import { obtenerMesas, crearMesa, eliminarMesa, cambiarEstadoMesa, editarMesa } from "../../api/mesaApi";
 function Mesas() {
-    const [mesas, setMesas] =useState([]);
-    const [mostrarModal, setMostrarModal] =useState(false);
-    const [mostrarEliminar, setMostrarEliminar] =useState(false);
-    const [mesaSeleccionada, setMesaSeleccionada] =useState(null);
-    const [numero, setNumero] =useState("");
-    const [capacidad, setCapacidad] =useState("");
-    const [error, setError] =useState("");
+    const [mesas, setMesas] = useState([]);
+    const [mostrarModal, setMostrarModal] = useState(false);
+    const [mostrarEliminar, setMostrarEliminar] = useState(false);
+    const [mesaSeleccionada, setMesaSeleccionada] = useState(null);
+    const [numero, setNumero] = useState("");
+    const [capacidad, setCapacidad] = useState("");
+    const [error, setError] = useState("");
+    const [mostrarEditar, setMostrarEditar] = useState(false);
+    const [mesaEditando, setMesaEditando] = useState(null);
     const cargarMesas = async () => {
         try {
-            const data =await obtenerMesas();
+            const data = await obtenerMesas();
             setMesas(data);
         } catch (error) {
             console.error(error);
         }
     };
-    useEffect(() => {cargarMesas();}, []);
+    useEffect(() => { cargarMesas(); }, []);
     const handleCrear = async () => {
         try {
             setError("");
-            await crearMesa({numero,capacidad });
+            await crearMesa({ numero, capacidad });
             setNumero("");
             setCapacidad("");
             setMostrarModal(false);
@@ -33,7 +35,7 @@ function Mesas() {
             );
         }
     };
-    const handleEliminar = (id) => {setMesaSeleccionada(id);setMostrarEliminar(true);};
+    const handleEliminar = (id) => { setMesaSeleccionada(id); setMostrarEliminar(true); };
     const confirmarEliminar = async () => {
         try {
             await eliminarMesa(
@@ -46,12 +48,47 @@ function Mesas() {
             console.error(error);
         }
     };
-    const handleEstado= async (id) => {
+    const handleEstado = async (id) => {
         try {
             await cambiarEstadoMesa(id);
             cargarMesas();
         } catch (error) {
             console.error(error);
+        }
+    };
+    const abrirEditar = (mesa) => {
+        setMesaEditando({
+            id: mesa.id,
+            numero: mesa.numero,
+            capacidad: mesa.capacidad,
+            activa: mesa.activa
+        });
+        setError("");
+        setMostrarEditar(true);
+    };
+
+    const guardarEdicion = async () => {
+        try {
+            setError("");
+
+            await editarMesa(
+                mesaEditando.id,
+                {
+                    numero: mesaEditando.numero,
+                    capacidad: mesaEditando.capacidad,
+                    activa: mesaEditando.activa
+                }
+            );
+
+            setMostrarEditar(false);
+            setMesaEditando(null);
+            cargarMesas();
+
+        } catch (error) {
+            setError(
+                error.response?.data?.mensaje ||
+                "Error al editar mesa"
+            );
         }
     };
     return (
@@ -67,7 +104,7 @@ function Mesas() {
                 </div>
                 <button
                     className="btn-primary"
-                    onClick={() => {setError("");setMostrarModal(true);}}
+                    onClick={() => { setError(""); setMostrarModal(true); }}
                 >
                     + Crear mesa
                 </button>
@@ -86,23 +123,30 @@ function Mesas() {
                         </p>
                         <span
                             className={
-                                mesa.activa? "estado disponible": "estado ocupada"
+                                mesa.activa ? "estado disponible" : "estado ocupada"
                             }
                         >
                             {
-                                mesa.activa? "Disponible": "Ocupada"
+                                mesa.activa ? "Disponible" : "Ocupada"
                             }
                         </span>
                         <div className="card-actions">
                             <button
                                 className="btn-link"
-                                onClick={() =>handleEstado(mesa.id ) }
+                                onClick={() => handleEstado(mesa.id)}
                             >
-                                {mesa.activa? "Marcar ocupada": "Marcar disponible"}
+                                {mesa.activa ? "Marcar ocupada" : "Marcar disponible"}
                             </button>
                             <button
+                                className="btn-link"
+                                onClick={() => abrirEditar(mesa)}
+                            >
+                                Editar
+                            </button>
+
+                            <button
                                 className="btn-danger"
-                                onClick={() =>handleEliminar( mesa.id)  }
+                                onClick={() => handleEliminar(mesa.id)}
                             >
                                 Eliminar
                             </button>
@@ -121,13 +165,13 @@ function Mesas() {
                                 type="number"
                                 placeholder="Número de mesa"
                                 value={numero}
-                                onChange={(e) =>setNumero(e.target.value) }
+                                onChange={(e) => setNumero(e.target.value)}
                             />
                             <input
                                 type="number"
                                 placeholder="Capacidad"
                                 value={capacidad}
-                                onChange={(e) =>setCapacidad(e.target.value)}
+                                onChange={(e) => setCapacidad(e.target.value)}
                             />
                             {
                                 error && (
@@ -145,7 +189,69 @@ function Mesas() {
                                 </button>
                                 <button
                                     className="btn-secondary"
-                                    onClick={() => {setMostrarModal(false);
+                                    onClick={() => {
+                                        setMostrarModal(false);
+                                        setError("");
+                                    }}
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+            {
+                mostrarEditar && mesaEditando && (
+                    <div className="modal-overlay">
+                        <div className="modal">
+                            <h2>Editar Mesa</h2>
+                            <input
+                                type="number"
+                                placeholder="Capacidad"
+                                value={mesaEditando.capacidad}
+                                onChange={(e) =>
+                                    setMesaEditando({
+                                        ...mesaEditando,
+                                        capacidad: e.target.value
+                                    })
+                                }
+                            />
+
+                            <select
+                                value={mesaEditando.activa ? "true" : "false"}
+                                onChange={(e) =>
+                                    setMesaEditando({
+                                        ...mesaEditando,
+                                        activa: e.target.value === "true"
+                                    })
+                                }
+                            >
+                                <option value="true">Disponible</option>
+                                <option value="false">Ocupada</option>
+                            </select>
+
+                            {
+                                error && (
+                                    <p className="error-message">
+                                        {error}
+                                    </p>
+                                )
+                            }
+
+                            <div className="modal-actions">
+                                <button
+                                    className="btn-primary"
+                                    onClick={guardarEdicion}
+                                >
+                                    Guardar
+                                </button>
+
+                                <button
+                                    className="btn-secondary"
+                                    onClick={() => {
+                                        setMostrarEditar(false);
+                                        setMesaEditando(null);
                                         setError("");
                                     }}
                                 >
@@ -172,7 +278,7 @@ function Mesas() {
                             <div className="modal-actions">
                                 <button
                                     className="btn-secondary"
-                                    onClick={() => {setMostrarEliminar(false);setMesaSeleccionada(null);}}
+                                    onClick={() => { setMostrarEliminar(false); setMesaSeleccionada(null); }}
                                 >
                                     Cancelar
                                 </button>

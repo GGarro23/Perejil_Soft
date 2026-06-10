@@ -36,7 +36,38 @@ body {
   background: #eef4ff;
   border: 1px solid #b6d0ff;
 }
+.nota-orden-cocina {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    color: #9a3412;
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin: 12px 0;
+    font-size: 14px;
+}
+.nota-orden-cocina {
+    margin: 14px 0;
+    padding: 12px 14px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-left: 5px solid #f59e0b;
+    border-radius: 12px;
+    color: #7c2d12;
+}
 
+.nota-orden-cocina strong {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.nota-orden-cocina p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+.nota-orden-cocina p {
+    margin: 4px 0 0;
+}
 .orden-card {
   background: white;
   border-radius: 16px;
@@ -74,7 +105,11 @@ body {
   cursor: pointer;
   font-weight: bold;
 }
-
+.orden-hora {
+    color: #6b7280;
+    font-size: 14px;
+    margin-top: 4px;
+}
 .btn-preparacion {
   background: #dfe9ff;
 }

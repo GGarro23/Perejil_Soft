@@ -6,10 +6,11 @@ const obtenerPendientes = async (req, res) => {
         o.id AS orden_id,
         o.estado,
         o.fecha,
+        o.nota,
         m.numero AS mesa,
         p.nombre AS producto,
         oi.cantidad,
-        oi.nota
+        oi.nota AS nota_producto
       FROM ordenes o
       JOIN mesas m ON o.mesa_id = m.id
       JOIN orden_items oi ON oi.order_id = o.id
@@ -27,14 +28,14 @@ const obtenerPendientes = async (req, res) => {
           estado: row.estado,
           fecha: row.fecha,
           mesa: row.mesa,
+          nota: row.nota,
           productos: []
         };
       }
 
       ordenesMap[row.orden_id].productos.push({
         nombre: row.producto,
-        cantidad: row.cantidad,
-        nota: row.nota
+        cantidad: row.cantidad
       });
     });
 
@@ -56,8 +57,9 @@ const detalleOrden = async (req, res) => {
                 oi.id,
                 p.nombre,
                 p.precio,
+                o.nota,
                 oi.cantidad,
-                oi.nota,
+                oi.nota AS nota_producto,
                 (p.precio * oi.cantidad) AS subtotal
             FROM orden_items oi
             JOIN productos p ON oi.producto_id = p.id

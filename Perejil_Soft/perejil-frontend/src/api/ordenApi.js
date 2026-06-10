@@ -8,8 +8,8 @@ export const obtenerOrden = async (id) =>{
     const response = await api.get(`/ordenes/${id}`);
     return response.data;
 };
-export const crearOrden = async (mesa_id) =>{
-    const response = await api.post("/ordenes", { mesa_id });
+export const crearOrden = async (mesa_id, nota = "") =>{
+    const response = await api.post("/ordenes", { mesa_id, nota });
     return response.data;
 };
 export const agregarProducto = async (ordenId, producto_id, cantidad, nota = "") =>{
@@ -18,6 +18,14 @@ export const agregarProducto = async (ordenId, producto_id, cantidad, nota = "")
 };
 export const enviarACocina = async (ordenId) =>{
     const response = await api.patch(`/ordenes/${ordenId}/enviar`);
+    return response.data;
+};
+export const guardarNotaOrden = async (ordenId, nota) => {
+    const response = await api.put(
+        `/ordenes/${ordenId}/nota`,
+        { nota }
+    );
+
     return response.data;
 };
 export const cancelarOrden = async (ordenId) =>{

@@ -21,7 +21,7 @@ const crearUsuario = async (req, res) => {
         ) {
             return res.status(400).json({
                 mensaje:
-                'Todos los campos son obligatorios'
+                    'Todos los campos son obligatorios'
             });
         }
 
@@ -30,7 +30,7 @@ const crearUsuario = async (req, res) => {
         if (password.length < 8) {
             return res.status(400).json({
                 mensaje:
-                'La contraseña debe tener al menos 8 caracteres'
+                    'La contraseña debe tener al menos 8 caracteres'
             });
         }
 
@@ -49,7 +49,7 @@ const crearUsuario = async (req, res) => {
         if (usuarioExistente.length > 0) {
             return res.status(400).json({
                 mensaje:
-                'El nombre de usuario ya existe'
+                    'El nombre de usuario ya existe'
             });
         }
 
@@ -80,7 +80,7 @@ const crearUsuario = async (req, res) => {
 
         res.status(201).json({
             mensaje:
-            'Usuario creado'
+                'Usuario creado'
         });
 
     } catch (error) {
@@ -93,6 +93,36 @@ const crearUsuario = async (req, res) => {
 
     }
 
+};
+const editarUsuario = async (req, res) => {
+    const { id } = req.params;
+    const { nombre, username, rol } = req.body;
+
+    try {
+        await db.query(
+            `
+            UPDATE usuarios
+            SET nombre = ?, username = ?, rol = ?
+            WHERE id = ?
+            `,
+            [nombre, username, rol, id]
+        );
+        if (id == 1) {
+            return res.status(400).json({
+                mensaje: "No se puede editar el usuario administrador"
+            });
+        }
+        res.json({
+            mensaje: "Usuario actualizado"
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            mensaje: "Error al actualizar usuario"
+        });
+    }
 };
 const obtenerUsuarios = async (req, res) => {
 
@@ -136,7 +166,7 @@ const eliminarUsuario = async (req, res) => {
 
         res.json({
             mensaje:
-            "Usuario eliminado"
+                "Usuario eliminado"
         });
 
     } catch (error) {
@@ -151,6 +181,7 @@ const eliminarUsuario = async (req, res) => {
 
 module.exports = {
     crearUsuario,
+    editarUsuario,
     obtenerUsuarios,
     eliminarUsuario
 };

@@ -9,12 +9,18 @@ const {
     obtenerOrdenes,
     enviarACocina,
     cancelarOrden,
-    cerrarOrden
+    cerrarOrden,
+    guardarNotaOrden
 } = require('../controllers/ordenController');
 router.post(
     '/',
     verificarToken,
     crearOrden
+);
+router.put(
+    "/:ordenId/nota",
+    verificarToken,
+    guardarNotaOrden
 );
 router.post(
     '/:ordenId/productos',
