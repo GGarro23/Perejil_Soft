@@ -9,13 +9,12 @@ function EstadoPedidos() {
         const cargar = async () => {
             try {
                 const data = await obtenerOrdenes();
-                setOrdenes(data.filter(o => o.estado !== "cancelada" && o.estado !== "listo"));
+                setOrdenes(data.filter(o => o.estado !== "cancelada"));
             } catch (err) {
                 console.error(err);
             }
         };
         cargar();
-        // Actualizar cada 15 segundos
         const intervalo = setInterval(cargar, 15000);
         return () => clearInterval(intervalo);
     }, []);

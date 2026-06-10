@@ -146,7 +146,7 @@ const obtenerOrdenes = async (req, res) => {
         res.status(500).json({
 
             mensaje:
-            "Error"
+                "Error"
 
         });
 
@@ -229,7 +229,7 @@ const cancelarOrden = async (req, res) => {
         ) {
             return res.status(400).json({
                 mensaje:
-                'No puede cancelarse'
+                    'No puede cancelarse'
             });
         }
         await db.query(
@@ -251,11 +251,40 @@ const cancelarOrden = async (req, res) => {
     }
 };
 
-const cerrarOrden = async(req, res) => {
+const cerrarOrden = async (req, res) => {
     const { ordenId } = req.params;
-    const { metodo_pago = 'efectivo' } = req.body;
-    try{
+    const { metodo_pago = "efectivo" } = req.body;
+
+    try {
         const usuario_id = req.usuario.id;
+
+        const [orden] = await db.query(
+            `
+            SELECT estado
+            FROM ordenes
+            WHERE id = ?
+            `,
+            [ordenId]
+        );
+
+        if (orden.length === 0) {
+            return res.status(404).json({
+                mensaje: "Orden no encontrada"
+            });
+        }
+
+        if (orden[0].estado === "facturada") {
+            return res.status(400).json({
+                mensaje: "La orden ya fue facturada"
+            });
+        }
+
+        if (orden[0].estado !== "listo") {
+            return res.status(400).json({
+                mensaje: "Solo se pueden facturar órdenes listas para servir"
+            });
+        }
+
         const [items] = await db.query(
             `
             SELECT SUM(p.precio * oi.cantidad) AS total
@@ -265,21 +294,19 @@ const cerrarOrden = async(req, res) => {
             `,
             [ordenId]
         );
+
         const total = items[0].total || 0;
-        await db.query(
-            `
-            UPDATE ordenes SET estado = 'listo' WHERE id = ?
-            `,
-            [ordenId]
-        );
+
         const [venta] = await db.query(
             `
             INSERT INTO ventas (orden_id, usuario_id, total, metodo_pago)
             VALUES (?, ?, ?, ?)
-            `, 
+            `,
             [ordenId, usuario_id, total, metodo_pago]
         );
-        const numeroFactura = venta.insertId;;
+
+        const numeroFactura = venta.insertId;
+
         await db.query(
             `
             INSERT INTO facturas (venta_id, numero_factura, total)
@@ -287,10 +314,26 @@ const cerrarOrden = async(req, res) => {
             `,
             [venta.insertId, numeroFactura, total]
         );
-        res.json({ mensaje: 'Orden cerrada', ventaId: venta.insertId });
+
+        await db.query(
+            `
+            UPDATE ordenes
+            SET estado = 'facturada'
+            WHERE id = ?
+            `,
+            [ordenId]
+        );
+
+        res.json({
+            mensaje: "Orden cerrada",
+            ventaId: venta.insertId
+        });
+
     } catch (error) {
         console.error(error);
-        res.status(500).json({ mensaje: 'Error al cerrar orden' });
+        res.status(500).json({
+            mensaje: "Error al cerrar orden"
+        });
     }
 };
 

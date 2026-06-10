@@ -46,6 +46,7 @@ function Facturas() {
                         <tr>
                             <th>Factura</th>
                             <th>Orden</th>
+                            <th>Usuario</th>
                             <th>Mesa</th>
                             <th>Fecha y Hora</th>
                             <th>Método de pago</th>
@@ -65,6 +66,7 @@ function Facturas() {
                                 <tr key={f.id}>
                                     <td>#{f.id}</td>
                                     <td>#{f.orden_id}</td>
+                                    <td>{f.usuario}</td>
                                     <td>Mesa {f.mesa}</td>
                                     <td>{formatFecha(f.fecha)}</td>
                                     <td style={{ textTransform: "capitalize" }}>{f.metodo_pago}</td>
@@ -89,7 +91,7 @@ function Facturas() {
                     <div className="modal">
                         <h2 style={{ marginBottom: "8px" }}>{detalle.numero_factura}</h2>
                         <p style={{ color: "#6B7280", marginBottom: "16px" }}>
-                            Mesa {detalle.mesa} · {formatFecha(detalle.fecha)} · {detalle.metodo_pago}
+                            Mesa {detalle.mesa} · {formatFecha(detalle.fecha)} · {detalle.metodo_pago}· {detalle.usuario}
                         </p>
 
                         <table className="custom-table">

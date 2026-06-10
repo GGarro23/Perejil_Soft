@@ -5,14 +5,16 @@ const getFacturas = async (req, res) => {
         const [facturas] = await db.query(
             `
             SELECT f.id, f.numero_factura, v.orden_id, m.numero AS mesa,
-            v.metodo_pago, v.total, v.fecha
+            v.metodo_pago, v.total, v.fecha,u.nombre AS usuario
             FROM facturas f
             JOIN ventas v ON f.venta_id = v.id
+            JOIN usuarios u ON v.usuario_id = u.id
             JOIN ordenes o ON v.orden_id = o.id
             JOIN mesas m ON o.mesa_id = m.id
             ORDER BY f.id DESC
             `
         );
+        console.log(facturas);
         res.json(facturas);
     } catch (error) {
         console.error(error);
@@ -25,9 +27,10 @@ const getDetallesFactura = async (req, res) => {
     try{
         const [factura] = await db.query(
             `
-            SELECT f.*, v.metodo_pago, v.total, v.orden_id, m.numero AS mesa
+            SELECT f.*, v.metodo_pago, v.total, v.orden_id, m.numero AS mesa,u.nombre AS usuario
             FROM facturas f
             JOIN ventas v ON f.venta_id = v.id
+            JOIN usuarios u ON v.usuario_id = u.id
             JOIN ordenes o ON v.orden_id = o.id
             JOIN mesas m ON o.mesa_id = m.id
             WHERE f.id = ?

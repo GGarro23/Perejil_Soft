@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { textos } from "../../i18n/translations";
 import { FaUtensils } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +16,8 @@ function CocinaDashboard() {
 
         return () => clearInterval(intervalo);
     }, []);
-
+    const idioma = localStorage.getItem("idioma") || "es";
+    const t = textos[idioma];
     const cargarOrdenes = async () => {
         try {
             const data = await obtenerOrdenesCocina();
@@ -75,9 +77,9 @@ function CocinaDashboard() {
                 <div className="header-info">
                     <h1>
                         <FaUtensils className="header-icon" />
-                        Perejil_Soft - Cocina
+                        {t.kitchenTitle}
                     </h1>
-                    <p>Panel de órdenes</p>
+                    <p>{t.kitchenSubtitle}</p>
                 </div>
 
                 <button
@@ -85,19 +87,19 @@ function CocinaDashboard() {
                     onClick={cerrarSesion}
                 >
                     <FiLogOut />
-                    Cerrar sesión
+                    {t.logout}
                 </button>
             </header>
 
             <main className="cocina-content">
                 <section>
                     <h2 className="cocina-column-title pendientes-title">
-                        Órdenes pendientes ({pendientes.length})
+                        {t.pendingOrders} ({pendientes.length})
                     </h2>
                     {pendientes.map(orden => (
                         <div className="orden-card orden-pendiente" key={orden.id}>
-                            <h3>Orden #{orden.id}</h3>
-                            <p>Mesa {orden.mesa}</p>
+                            <h3>{t.order} #{orden.id}</h3>
+                            <p>{t.table} {orden.mesa}</p>
 
                             {orden.productos.map((producto, i) => (
                                 <div className="producto-row" key={i}>
@@ -120,7 +122,7 @@ function CocinaDashboard() {
                                 className="btn-preparacion"
                                 onClick={() => marcarPreparacion(orden.id)}
                             >
-                                Marcar en preparación
+                                {t.markPreparing}
                             </button>
                         </div>
                     ))}
@@ -128,12 +130,12 @@ function CocinaDashboard() {
 
                 <section>
                     <h2 className="cocina-column-title preparacion-title">
-                        Órdenes Preparandose ({preparacion.length})
+                        {t.preparingOrders} ({preparacion.length})
                     </h2>
                     {preparacion.map(orden => (
                         <div className="orden-card orden-preparacion" key={orden.id}>
-                            <h3>Orden #{orden.id}</h3>
-                            <p>Mesa {orden.mesa}</p>
+                            <h3>{t.order} #{orden.id}</h3>
+                            <p>{t.table}{orden.mesa}</p>
 
                             {orden.productos.map((producto, i) => (
                                 <div className="producto-row" key={i}>
@@ -156,7 +158,7 @@ function CocinaDashboard() {
                                 className="btn-listo"
                                 onClick={(e) => marcarListo(orden.id, e.currentTarget)}
                             >
-                                Marcar Listo para Servir
+                                {t.markReady}
                             </button>
                         </div>
                     ))}

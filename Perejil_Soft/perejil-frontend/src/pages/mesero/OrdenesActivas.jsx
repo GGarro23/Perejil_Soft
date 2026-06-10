@@ -14,7 +14,7 @@ function OrdenesActivas() {
     const cargar = async () => {
         try {
             const data = await obtenerOrdenes();
-            setOrdenes(data.filter(o => o.estado !== "cancelada" && o.estado !== "listo"));
+            setOrdenes(data.filter(o => o.estado !== "cancelada" && o.estado!=="facturada"));
         } catch (err) {
             console.error(err);
         }
