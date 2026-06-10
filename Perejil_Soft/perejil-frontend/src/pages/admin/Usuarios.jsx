@@ -158,7 +158,7 @@ function Usuarios() {
                                 type="password"
                                 placeholder="Contraseña"
                                 value={password}
-                                onChange={(e) =>etPassword(e.target.value )}
+                                onChange={(e) =>setPassword(e.target.value )}
                             />
                             <select
                                 value={rol}

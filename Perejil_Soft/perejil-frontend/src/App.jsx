@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Menu from "./pages/admin/Menu";
@@ -6,23 +6,22 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import Usuarios from "./pages/admin/Usuarios";
 import Mesas from "./pages/admin/Mesas";
 import Pedidos from "./pages/admin/Pedidos";
+import CocinaDashboard from "./pages/cocina/CocinaDashboard";
+function Ventas() {return <h1>Panel Ventas</h1>;}
+//import Ventas from "./pages/admin/Ventas";
 function MeseroDashboard() {return <h1>Panel Mesero</h1>;}
-function CocinaDashboard() {return <h1>Panel Cocina</h1>;}
-function Ventas() {return <h1>Ventas</h1>;}
 function Facturas() {return <h1>Facturas</h1>;}
 function App() {
     return(
         <BrowserRouter>
             <Routes>
+                <Route 
+                path="/" 
+                element={<Navigate to="/login" replace />} 
+                />
                 <Route
                     path="/login"
                     element={<Login />}
-                />
-                <Route
-                    path="/admin/pedidos"
-                    element={
-                <Pedidos />
-                }
                 />
                 <Route
                     path="/admin"

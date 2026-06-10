@@ -1,0 +1,125 @@
+body {
+  margin: 0;
+  background: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+.cocina-header {
+  background: #a8b58f;
+  color: white;
+  padding: 24px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cocina-content {
+  max-width: 1300px;
+  margin: 30px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.cocina-column-title {
+  padding: 18px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.pendientes-title {
+  background: #f7f3dd;
+  border: 1px solid #e4d784;
+}
+
+.preparacion-title {
+  background: #eef4ff;
+  border: 1px solid #b6d0ff;
+}
+
+.orden-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.producto-row {
+  background: #f6f6f6;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.producto-main {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cantidad {
+  background: #9aaa86;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.btn-preparacion,
+.btn-listo {
+  width: 100%;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 15px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-preparacion {
+  background: #dfe9ff;
+}
+
+.btn-listo {
+  background: #dff3df;
+}
+.btn-logout {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+
+    padding: 12px 24px;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all .2s ease;
+}
+
+.btn-logout:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+}
+
+.btn-logout:active {
+    transform: translateY(0);
+}
+
+.header-info h1{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.header-icon{
+    font-size:28px;
+}
+
+.btn-logout{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
